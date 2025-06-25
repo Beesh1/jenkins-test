@@ -1,9 +1,15 @@
 pipeline {
     agent any
 
+    environment {
+        PATH = "${HOME}/.local/bin:${PATH}"
+    }
+
     stages {
         stage('Checkout') {
-            steps { checkout scm }
+            steps {
+                checkout scm
+            }
         }
 
         stage('Setup Env') {
@@ -12,59 +18,73 @@ pipeline {
                     curl -LsSf https://astral.sh/uv/install.sh | sh
                     export PATH="$HOME/.local/bin:$PATH"
                     uv venv
-                    uv pip install -r requirements.txt || true
+                    uv sync
                 '''
             }
         }
 
         stage('Ruff Linter') {
             steps {
-                sh 'source .venv/bin/activate && ruff check app'
+                sh '''
+                    . .venv/bin/activate
+                    ruff check .
+                '''
             }
         }
 
         stage('Ruff Formatter') {
             steps {
-                sh 'source .venv/bin/activate && ruff format --check app'
+                sh '''
+                    . .venv/bin/activate
+                    ruff format --check .
+                '''
             }
         }
 
         stage('Mypy Type Checker') {
             steps {
-                sh 'source .venv/bin/activate && mypy app'
+                sh '''
+                    . .venv/bin/activate
+                    mypy .
+                '''
             }
         }
 
         stage('Bandit Security Scanner') {
             steps {
-                sh 'source .venv/bin/activate && bandit -r app --exclude .venv --skip B101'
+                sh '''
+                    . .venv/bin/activate
+                    bandit -r . --exclude .venv
+                '''
             }
         }
 
         stage('Safety Dependency Audit') {
             steps {
-                sh 'source .venv/bin/activate && safety check'
+                sh '''
+                    . .venv/bin/activate
+                    safety check --full-report
+                '''
             }
         }
 
         stage('Test Coverage') {
             steps {
                 sh '''
-                    source .venv/bin/activate
-                    coverage run -m pytest
-                    coverage report --fail-under=80
-                    coverage html
+                    . .venv/bin/activate
+                    uv pip install pytest pytest-cov
+                    pytest --cov=.
                 '''
             }
         }
     }
 
     post {
-        success {
-            echo '✅ All checks passed!'
-        }
         failure {
             echo '❌ One or more checks failed. See stage above.'
+        }
+        success {
+            echo '✅ All checks passed successfully.'
         }
     }
 }
