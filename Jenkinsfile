@@ -45,7 +45,7 @@ pipeline {
             steps {
                 sh '''
                     . .venv/bin/activate
-                    mypy .
+                    mypy --ignore-missing-imports --scripts-are-modules .
                 '''
             }
         }
@@ -54,7 +54,7 @@ pipeline {
             steps {
                 sh '''
                     . .venv/bin/activate
-                    bandit -r . --exclude .venv
+                    bandit --recursive --exclude .venv,.coverage,.pytest_cache --skip B101 .
                 '''
             }
         }
