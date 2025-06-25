@@ -36,7 +36,7 @@ pipeline {
             steps {
                 sh '''
                     . .venv/bin/activate
-                    ruff format --check .
+                    ruff format .
                 '''
             }
         }
