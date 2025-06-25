@@ -63,7 +63,7 @@ pipeline {
             steps {
                 sh '''
                     . .venv/bin/activate
-                    safety check --full-report
+                    safety check --full-report --file pyproject.toml
                 '''
             }
         }
