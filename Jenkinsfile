@@ -72,6 +72,7 @@ pipeline {
             steps {
                 sh '''
                     . .venv/bin/activate
+                    export PYTHONPATH=.
                     uv pip install pytest pytest-cov
                     pytest --cov=.
                 '''
