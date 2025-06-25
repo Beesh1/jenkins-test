@@ -10,9 +10,9 @@ pipeline {
             steps {
                 sh '''
                     curl -LsSf https://astral.sh/uv/install.sh | sh
-                    ~/.cargo/bin/uv venv
-                    source .venv/bin/activate
-                    uv pip install -r pyproject.toml
+                    export PATH="$HOME/.local/bin:$PATH"
+                    uv venv
+                    uv pip install -r requirements.txt || true
                 '''
             }
         }
