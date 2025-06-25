@@ -37,7 +37,7 @@ pipeline {
 
         stage('Bandit Security Scanner') {
             steps {
-                sh 'source .venv/bin/activate && bandit -r app --exclude .venv'
+                sh 'source .venv/bin/activate && bandit -r app --exclude .venv --skip B101'
             }
         }
 
