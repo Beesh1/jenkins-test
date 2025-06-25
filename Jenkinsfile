@@ -54,7 +54,7 @@ pipeline {
             steps {
                 sh '''
                     . .venv/bin/activate
-                    bandit --recursive --exclude .venv,.coverage,.pytest_cache --skip B101 .
+                    bandit --recursive --exclude $WORKSPACE/.venv,$WORKSPACE/.coverage,$WORKSPACE/.pytest_cache --skip B101 $WORKSPACE
                 '''
             }
         }
